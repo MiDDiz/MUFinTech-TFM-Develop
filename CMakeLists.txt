@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.19)
 set (CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project (sqf)
 
 # 1. Define some well-known folders:
@@ -43,7 +44,7 @@ set(CXX_FILE_EXTENSIONS "*.h"  "*.cpp")
 
 # 4. Set Compilation environment
 include_directories(${INCLUDE_HOME})
-add_definitions(-std=gnu++14)
+add_definitions(-std=gnu++20)
 
 # 5. Add subdirs
 add_subdirectory(src)
