@@ -24,6 +24,13 @@ message("--> Loading CMake modules: ")
 include(${CMAKE_MODULE_PATH}/CMakeBoostTest.cmake)
 include(${CMAKE_MODULE_PATH}/CMakeAuxFunctions.cmake)
 
+# Add GTest framework on compilation.
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/a6ce08abf746c0aaa577520d6d1f6ea2abeeb61d.zip
+)
+FetchContent_MakeAvailable(googletest)
 
 # 3. Set CMake environment
 # - Set folders
