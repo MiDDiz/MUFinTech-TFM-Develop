@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE test_foo
 #include <boost/test/unit_test.hpp>
-#include <Foo/foo.h>
+#include <TestingLib/foo.h>
 
 BOOST_AUTO_TEST_SUITE(hi_boost)
 
