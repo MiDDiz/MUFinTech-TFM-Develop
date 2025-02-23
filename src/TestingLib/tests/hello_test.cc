@@ -10,7 +10,7 @@ TEST(HelloTest, BasicAssertions)
 	EXPECT_EQ(7 * 6, 42);
 }
 
-TEST(HelloTest, BasicAssertions)
+TEST(TestAdd, BasicAssertions)
 {
 	// Expect two strings not to be equal.
 	double f = 0.1;
