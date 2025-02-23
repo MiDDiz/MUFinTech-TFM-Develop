@@ -7,6 +7,12 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  pull_request_target:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  checks: write
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -60,4 +66,4 @@ jobs:
         uses: mikepenz/action-junit-report@v5
         if: success() || failure() # always run even if the previous step fails
         with:
-          report_paths: '**/build/test-results/google-test/*.xml'
+          report_paths: "**/build/test-results/google-test/*.xml"
