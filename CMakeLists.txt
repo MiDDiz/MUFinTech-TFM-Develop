@@ -29,7 +29,7 @@ include(${CMAKE_MODULE_PATH}/CMakeAuxFunctions.cmake)
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/a6ce08abf746c0aaa577520d6d1f6ea2abeeb61d.zip
+  URL https://github.com/google/googletest/archive/6910c9d9165801d8827d628cb72eb7ea9dd538c5.zip # 1.16.0
 )
 FetchContent_MakeAvailable(googletest)
 
