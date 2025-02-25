@@ -98,6 +98,10 @@ jobs:
         # Build your program with the given configuration
         run: scan-build make ${{github.workspace}}/build
 
+      - name: Analyze src
+        # Build your program with the given configuration
+        run: scan-build ${{github.workspace}}/src/*/*.cpp ${{github.workspace}}/src/*.cpp
+
   sonarqube:
     runs-on: ubuntu-latest
     steps:
