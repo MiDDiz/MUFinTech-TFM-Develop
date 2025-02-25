@@ -96,7 +96,7 @@ jobs:
 
       - name: Analyze
         # Build your program with the given configuration
-        run: scan-build make ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: scan-build make ${{github.workspace}}/build
 
   sonarqube:
     runs-on: ubuntu-latest
