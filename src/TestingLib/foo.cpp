@@ -1,5 +1,7 @@
 #include "foo.h"
 #include <vector>
+#include <iostream>
+
 double add(double f, int total)
 {
 	double sum = 0.0;
@@ -40,5 +42,9 @@ double leak()
 	int *q = new int;
 	// no delete
 	std::vector<int> *ptrVector = new std::vector<int>(5);
+	for (auto i : *ptrVector)
+	{
+		std::cout << ptrVector;
+	}
 	return (-1);
 }
