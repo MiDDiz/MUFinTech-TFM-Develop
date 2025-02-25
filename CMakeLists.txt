@@ -46,7 +46,7 @@ set(CXX_FILE_EXTENSIONS "*.h"  "*.cpp")
 include_directories(${INCLUDE_HOME})
 add_definitions(-std=gnu++20)
 
-add_compile_options(-fsanitize=address)
+SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
 # 5. Add subdirs
 add_subdirectory(src)
