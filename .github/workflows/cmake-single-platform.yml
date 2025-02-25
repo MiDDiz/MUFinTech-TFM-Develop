@@ -97,7 +97,7 @@ jobs:
 
       - name: Analyze
         # Build your program with the given configuration
-        run: scan-build cmake ${{github.workspace}}/build
+        run: scan-build cmake --build ${{github.workspace}}/build
 
       # - name: Analyze src
       #   # Build your program with the given configuration
