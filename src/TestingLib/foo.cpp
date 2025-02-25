@@ -29,3 +29,16 @@ double substract(double f, int total)
 	}
 	return sum;
 }
+
+double leak()
+{
+	// OK
+	int *p = new int;
+	delete p;
+
+	// Memory leak
+	int *q = new int;
+	// no delete
+
+	return (-1);
+}
