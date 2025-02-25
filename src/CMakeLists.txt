@@ -1,1 +1,3 @@
 add_subdirectory(TestingLib)
+add_subdirectory(Instrumentos)
+add_subdirectory(CalculadoraFechas)
