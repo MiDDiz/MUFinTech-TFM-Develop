@@ -18,14 +18,7 @@ struct InstrumentDescription
 		bond,
 		swap
 	};
-	// Necesitamos que del instrumento, se defina cómo se trabajarán las fechas interamente.
-	enum DateType
-	{
-		typeActual360,
-		type30360
-	};
 	Type type;
-	DateType dateType;
 	InstrumentDescription(Type type_) : type(type_) {}
 	LegDescription payer;
 	// Let's assume receiver as the coupon bond definition -> Entonces payer tiene

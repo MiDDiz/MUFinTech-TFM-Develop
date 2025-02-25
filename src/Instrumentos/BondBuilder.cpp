@@ -13,6 +13,6 @@ std::unique_ptr<IPricer>
 BondBuilder::build(const InstrumentDescription &instrument)
 {
 	//...
-	return (std::move(std::make_unique<Bond>(instrument.receiver,
+	return (std::move(std::make_unique<Bond>(instrument.receiver, instrument.payer,
 											 instrument.zerocouponCurve)));
 }

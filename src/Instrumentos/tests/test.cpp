@@ -6,7 +6,7 @@ BOOST_AUTO_TEST_SUITE(practica1)
 	BOOST_AUTO_TEST_CASE(calculo_fraccion)
 	{
 		BOOST_TEST_MESSAGE("álculo de las fracciones de año." );
-		
+
 
 	}
 

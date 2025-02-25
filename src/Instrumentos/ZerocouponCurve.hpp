@@ -3,26 +3,25 @@
 
 #include <vector>
 #include <cmath>
-#include "CalculadoraFechas/Calculator.hpp"
 
 class ZerocouponCurve
 {
 private:
 	/* data */
-	std::vector<DayCountCalculator> periods;
+	std::vector<double> periods;
 	std::vector<double> rates;
 	// std::vector<double> discountFactors;
 	// std::vector<double> zeroCoupons;
 
 public:
-	ZerocouponCurve(std::vector<DayCountCalculator> periods, std::vector<double> rates) : periods{periods}, rates{rates} {}
+	ZerocouponCurve(std::vector<double> periods, std::vector<double> rates) : periods{periods}, rates{rates} {}
 	ZerocouponCurve() : periods{}, rates{} {};
 	~ZerocouponCurve() = default;
 
 	// Get zero coupon
-	double get_zc(DayCountCalculator period);
+	double get_zc(double period);
 	// Get discount Factor
-	double get_dcf(DayCountCalculator period);
+	double get_dcf(double period);
 };
 
 #endif
