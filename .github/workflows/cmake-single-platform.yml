@@ -102,14 +102,6 @@ jobs:
           name: code-coverage-report
           path: "${{github.workspace}}/build/coverage_report/index.html"
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
-        with:
-          args: >
-            --define sonar.cfamily.llvm-cov.reportPath=coverage.txt
-
   static-analisis:
     runs-on: ubuntu-latest
     # needs: build
@@ -188,3 +180,42 @@ jobs:
           name: "CodeChecker Bug Reports"
           path: ${{ steps.codechecker.outputs.result-html-dir }}
 
+  sonarqube:
+    name: Deploy to sonarqube cloud
+    runs-on: ubuntu-latest
+    env:
+      BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Install Build Wrapper
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v4
+
+      - name: Install dependencies
+        id: dependencies
+        run: sudo apt install -y clang llvm
+
+      - name: Build Boost
+        id: install-boost
+        uses: MarkusJx/install-boost@v2
+        with:
+          boost_version: 1.87.0
+          platform_version: 20.04
+          link: shared
+
+      - name: Run Build Wrapper
+        run: |
+          mkdir build
+          cmake -S . -B build
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Put the name of your token here
+        with:
+          args: >
+            --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
