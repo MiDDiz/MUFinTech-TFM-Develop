@@ -54,6 +54,8 @@ jobs:
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         # run: ctest -C ${{env.BUILD_TYPE}}
         run: ./test_foo
+        env:
+          LLVM_PROFILE_FILE: "build/btest.profraw"
 
       - name: Test GTest
         working-directory: ${{github.workspace}}/build
@@ -63,6 +65,19 @@ jobs:
         run: ./hello_test
         env:
           GTEST_OUTPUT: "xml:build/test-results/google-test/"
+          LLVM_PROFILE_FILE: "build/gtest.profraw"
+
+      - name: Compile coverage
+        working-directory: ${{github.workspace}}/build
+        run: llvm-profdata merge -sparse -output=${{github.workspace}}/build/${PROFDATA_FILE} ${{github.workspace}}/build/*.profraw
+        env:
+          PROFDATA_FILE: "coverage.profdata"
+      
+      - name: Compile coverage
+        working-directory: ${{github.workspace}}/build
+        run: llvm-cov show ${{github.workspace}}/build -instr-profile=${PROFDATA_FILE} -format=html -output-dir=${CMAKE_BINARY_DIR}/coverage_report
+        env:
+          PROFDATA_FILE: "coverage.profdata"
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
@@ -70,6 +85,12 @@ jobs:
         with:
           report_paths: "**/build/test-results/google-test/*.xml"
           include_passed: "true"
+      
+      - name: Publish Coverage Report
+        uses: pavi2410/html-preview-action@v4
+        with:
+          html_file: '${{github.workspace}}/build/coverage_report'
+          job_summary: true
 
   static-analisis:
     runs-on: ubuntu-latest

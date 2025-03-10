@@ -2,16 +2,18 @@ cmake_minimum_required (VERSION 3.19)
 set (CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project (sqf)
-add_definitions(-std=gnu++20)
+add_definitions(-std=gnu++2a)
 
 # Address Sanitizing
 SET(GCC_SANITIZE_FLAGS "-fsanitize=address -O0")
 SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_SANITIZE_FLAGS}")
 # Coverage Testing
-SET(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -coverage -fprofile-arcs -ftest-coverage")
-SET(GCC_COVERAGE_LINK_FLAGS    "-coverage -lgcov")
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
+#SET(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -coverage -fprofile-arcs -ftest-coverage")
+#SET(GCC_COVERAGE_LINK_FLAGS    "-coverage -lgcov")
+#SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
+#SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
+add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+add_link_options(-fprofile-instr-generate)
 
 # 1. Define some well-known folders:
 # - Place for compile binaries
