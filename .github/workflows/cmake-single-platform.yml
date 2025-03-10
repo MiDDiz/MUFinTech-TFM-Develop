@@ -82,7 +82,7 @@ jobs:
 
       - name: Generate coverage Report
         working-directory: ${{github.workspace}}/build
-        run: llvm-cov show ${{github.workspace}}/build/libInstrumentos.so -instr-profile=${PROFDATA_FILE} -format=html -output-dir= ${{github.workspace}}/build/coverage_report
+        run: llvm-cov show ${{github.workspace}}/build/libInstrumentos.so -instr-profile=${PROFDATA_FILE} -format=html -output-dir=${{github.workspace}}/build/coverage_report
         env:
           PROFDATA_FILE: "coverage.profdata"
 
