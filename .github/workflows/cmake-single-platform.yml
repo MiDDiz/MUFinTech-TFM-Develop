@@ -208,7 +208,7 @@ jobs:
         run: |
           mkdir build
           cmake -S . -B build
-          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake -Wno-dev --build build/ -DCMAKE_CXX_COMPILER=/usr/bin/clang++ --config Debug
+          build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake -Wno-dev --build build/ -DCMAKE_CXX_COMPILER=/usr/bin/clang++
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
