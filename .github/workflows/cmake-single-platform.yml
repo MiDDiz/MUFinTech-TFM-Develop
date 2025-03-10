@@ -82,7 +82,7 @@ jobs:
 
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
-        run: llvm-cov show ${{github.workspace}}/build -instr-profile=${PROFDATA_FILE} -format=html -output-dir=${CMAKE_BINARY_DIR}/coverage_report
+        run: llvm-cov show ${{github.workspace}}/build -instr-profile=${PROFDATA_FILE} -format=html -output-dir= ${{github.workspace}}/build/coverage_report
         env:
           PROFDATA_FILE: "coverage.profdata"
 
