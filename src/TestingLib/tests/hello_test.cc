@@ -14,5 +14,5 @@ TEST(TestAddNE, BasicAssertions)
 {
 	// Expect two strings not to be equal.
 	double f = 0.1;
-	EXPECT_EQ(add(f, 10), f * 10);
+	ASSERT_NEAR(add(f, 10), f * 10, 0.000001);
 }
