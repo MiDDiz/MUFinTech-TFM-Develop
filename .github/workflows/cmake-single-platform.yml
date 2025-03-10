@@ -30,6 +30,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies
+        id: dependencies
+        run: sudo apt install -y clang llvm
+      
       - name: Build Boost
         id: install-boost
         uses: MarkusJx/install-boost@v2
