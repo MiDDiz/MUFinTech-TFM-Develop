@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         id: dependencies
         run: sudo apt install -y clang llvm
-      
+
       - name: Build Boost
         id: install-boost
         uses: MarkusJx/install-boost@v2
@@ -71,12 +71,15 @@ jobs:
           GTEST_OUTPUT: "xml:build/test-results/google-test/"
           LLVM_PROFILE_FILE: "build/gtest.profraw"
 
+      - name: Print coverage gens
+        run: tree ${{github.workspace}}/build
+
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
-        run: llvm-profdata merge -sparse -output=${{github.workspace}}/build/${PROFDATA_FILE} ${{github.workspace}}/build/*.profraw
+        run: llvm-profdata merge -sparse -output=${{github.workspace}}/build/${PROFDATA_FILE} ${{github.workspace}}/build/**/*.profraw
         env:
           PROFDATA_FILE: "coverage.profdata"
-      
+
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
         run: llvm-cov show ${{github.workspace}}/build -instr-profile=${PROFDATA_FILE} -format=html -output-dir=${CMAKE_BINARY_DIR}/coverage_report
@@ -89,11 +92,11 @@ jobs:
         with:
           report_paths: "**/build/test-results/google-test/*.xml"
           include_passed: "true"
-      
+
       - name: Publish Coverage Report
         uses: pavi2410/html-preview-action@v4
         with:
-          html_file: '${{github.workspace}}/build/coverage_report'
+          html_file: "${{github.workspace}}/build/coverage_report"
           job_summary: true
 
   static-analisis:
