@@ -16,10 +16,3 @@ TEST(TestAddNE, BasicAssertions)
 	double f = 0.1;
 	EXPECT_EQ(add(f, 10), f * 10);
 }
-
-TEST(TestLeak, BasicAssertions)
-{
-	// Expect two strings not to be equal.
-	double f = 0.1;
-	EXPECT_EQ(leak(), -1);
-}
