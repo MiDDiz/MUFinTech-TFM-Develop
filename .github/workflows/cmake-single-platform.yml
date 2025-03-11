@@ -134,18 +134,6 @@ jobs:
       #   # Build your program with the given configuration
       #   run: scan-build ${{github.workspace}}/src/*/*.cpp ${{github.workspace}}/src/*.cpp
 
-  #sonarqube:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - uses: actions/checkout@v4
-  #      with:
-  #        # Disabling shallow clones is recommended for improving the relevancy of reporting
-  #        fetch-depth: 0
-  #    - name: Official SonarQube Scan
-  #      uses: SonarSource/sonarqube-scan-action@v5.0.0
-  #      env:
-  #        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
   code-checker:
     runs-on: ubuntu-latest
     steps:
