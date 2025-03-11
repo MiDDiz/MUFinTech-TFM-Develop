@@ -222,6 +222,12 @@ jobs:
         env:
           PROFDATA_FILE: "coverage.profdata"
 
+      - name: Cat coverage
+        run: cat ${{github.workspace}}/build/coverage.txt
+
+      - name: Tree Project
+        run: tree .
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
         env:
