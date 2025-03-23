@@ -24,7 +24,6 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-
       - name: Configure checkout@v4
         uses: actions/checkout@v4
 
@@ -43,6 +42,7 @@ jobs:
       - name: Install Quantlib
         run: |
           curl -L https://github.com/lballabio/QuantLib/releases/download/v1.37/QuantLib-1.37.tar.gz -o QuantLib-1.37.tar.gz
+          tar xzf QuantLib-1.4.1.tar.gz
           echo "QuantLib Downloaded ✅"
           cd QuantLib-1.37
           ./configure
