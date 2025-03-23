@@ -45,7 +45,7 @@ jobs:
           tar xzf QuantLib-1.37.tar.gz
           echo "QuantLib Downloaded ✅"
           cd QuantLib-1.37
-          ./configure
+          ./configure --with-boost-include=${{github.workspace}}
           echo "QuantLib Build Setup ✅"
           make
           echo "QuantLib Built ✅"
