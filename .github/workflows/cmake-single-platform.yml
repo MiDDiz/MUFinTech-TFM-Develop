@@ -39,7 +39,15 @@ jobs:
       #     platform_version: 20.04
       #     link: shared
 
-      - name: Install Quantlib
+      - name: Recover cached Quantlib
+        id: cache-quantlib
+        uses: actions/cache@v4
+        with:
+          path: ${{github.workspace}}/QuantLib-1.37
+          key: ${{ runner.os }}-quantlib
+
+      - name: Generate Quantlib
+        if: steps.cache-quantlib.outputs.cache-hit != 'true'
         run: |
           curl -L https://github.com/lballabio/QuantLib/releases/download/v1.37/QuantLib-1.37.tar.gz -o QuantLib-1.37.tar.gz
           tar xzf QuantLib-1.37.tar.gz
