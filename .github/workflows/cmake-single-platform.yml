@@ -33,7 +33,7 @@ jobs:
 
       - name: Install apt dependencies [clang, llvm]
         id: dependencies
-        run: sudo apt install -y clang ll
+        run: sudo apt install -y clang llvm
 
       - name: Recover cached Boost 🔁
         id: cache-boost
