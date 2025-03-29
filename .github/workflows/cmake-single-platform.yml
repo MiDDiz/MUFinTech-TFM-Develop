@@ -52,9 +52,9 @@ jobs:
           tar --bzip2 -xf ${{github.workspace}}/boost_${{env.BOOST_VER}}.tar.bz2
           echo "Boost v${{env.BOOST_VER}} Downloaded ✅"
           cd ${{github.workspace}}/boost_${{env.BOOST_VER}}
-          ./bootstrap.sh
+          sudo ./bootstrap.sh
           echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
-          ./b2 install
+          sudo ./b2 install
           echo "Boost v${{env.BOOST_VER}} Installed ✅"
 
       - name: Recover cached Quantlib 🔁
