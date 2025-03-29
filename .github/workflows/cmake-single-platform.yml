@@ -18,6 +18,10 @@ permissions:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  BOOST_DOWNLOAD: https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.bz2
+  BOOST_VER: 1_82_0
+  BOOST_ROOT: /usr/local/boost_1_82_0
+  QUANTLIB_VER: 1.37
 
 jobs:
   build:
@@ -29,28 +33,44 @@ jobs:
 
       - name: Install apt dependencies [clang, llvm]
         id: dependencies
-        run: sudo apt install -y clang llvm libboost-all-dev
+        run: sudo apt install -y clang ll
 
-      # - name: Install Boost
-      #   id: install-boost
-      #   uses: MarkusJx/install-boost@v2
-      #   with:
-      #     boost_version: 1.87.0
-      #     platform_version: 20.04
-      #     link: shared
+      - name: Recover cached Boost 🔁
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{env.BOOST_ROOT}}
+          key: ${{ runner.os }}-boost
 
-      - name: Recover cached Quantlib
+      - name: Generate Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        id: install-boost
+        run: |
+          echo "Boost Cache Failed ❌"
+          echo "Building Boost v${{env.BOOST_VER}} 🚀..."
+          wget ${{env.BOOST_DOWNLOAD}}
+          tar --bzip2 -xf ${{github.workspace}}/boost_${{env.BOOST_VER}}.tar.bz2
+          echo "Boost v${{env.BOOST_VER}} Downloaded ✅"
+          cd ${{github.workspace}}/boost_${{env.BOOST_VER}}
+          ./bootstrap.sh
+          echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
+          ./b2 install
+          echo "Boost v${{env.BOOST_VER}} Installed ✅"
+
+      - name: Recover cached Quantlib 🔁
         id: cache-quantlib
         uses: actions/cache@v4
         with:
-          path: ${{github.workspace}}/QuantLib-1.37
+          path: ${{github.workspace}}/QuantLib-${{env.QUANTLIB_VER}}
           key: ${{ runner.os }}-quantlib
 
       - name: Generate Quantlib
         if: steps.cache-quantlib.outputs.cache-hit != 'true'
         run: |
-          curl -L https://github.com/lballabio/QuantLib/releases/download/v1.37/QuantLib-1.37.tar.gz -o QuantLib-1.37.tar.gz
-          tar xzf QuantLib-1.37.tar.gz
+          echo "QuantLib Cache Failed ❌"
+          echo "Building QuantLib v${{env.QUANTLIB_VER}} 🚀..."
+          curl -L https://github.com/lballabio/QuantLib/releases/download/v${{env.QUANTLIB_VER}}/QuantLib-${{env.QUANTLIB_VER}}.tar.gz -o QuantLib-${{env.QUANTLIB_VER}}.tar.gz
+          tar xzf QuantLib-${{env.QUANTLIB_VER}}.tar.gz
           echo "QuantLib Downloaded ✅"
           cd QuantLib-1.37
           ./configure --with-boost-include=${{env.BOOST_ROOT}}
@@ -59,14 +79,12 @@ jobs:
           echo "QuantLib Built ✅"
           sudo make install
           echo "QuantLib Installed ✅"
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
       - name: Build
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
