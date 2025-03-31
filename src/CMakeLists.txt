@@ -1,3 +1,1 @@
-add_subdirectory(TestingLib)
-add_subdirectory(Instrumentos)
-add_subdirectory(CalculadoraFechas)
+add_subdirectory(QuantLib-1.37)

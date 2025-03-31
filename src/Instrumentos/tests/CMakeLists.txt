@@ -1,1 +1,0 @@
-boost_test_project(NAME test_instrumentos DEPS Instrumentos CalculadoraFechas)

@@ -64,21 +64,6 @@ jobs:
     #      path: ${{github.workspace}}/QuantLib-${{env.QUANTLIB_VER}}
     #      key: ${{ runner.os }}-quantlib
 
-      - name: Generate Quantlib
-        if: steps.cache-quantlib.outputs.cache-hit != 'true'
-        run: |
-          echo "QuantLib Cache Failed ❌"
-          echo "Building QuantLib v${{env.QUANTLIB_VER}} 🚀..."
-          curl -L https://github.com/lballabio/QuantLib/releases/download/v${{env.QUANTLIB_VER}}/QuantLib-${{env.QUANTLIB_VER}}.tar.gz -o QuantLib-${{env.QUANTLIB_VER}}.tar.gz
-          tar xzf QuantLib-${{env.QUANTLIB_VER}}.tar.gz
-          echo "QuantLib Downloaded ✅"
-          cd QuantLib-1.37
-          ./configure --with-boost-include=${{env.BOOST_ROOT}}
-          echo "QuantLib Build Setup ✅"
-          make
-          echo "QuantLib Built ✅"
-          sudo make install
-          echo "QuantLib Installed ✅"
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
