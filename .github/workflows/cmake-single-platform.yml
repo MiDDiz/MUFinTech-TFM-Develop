@@ -56,14 +56,14 @@ jobs:
           echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
           sudo ./b2 install
           echo "Boost v${{env.BOOST_VER}} Installed ✅"
+          rm -rf ${{github.workspace}}/boost_${{env.BOOST_VER}}
 
-    #  - name: Recover cached Quantlib 🔁
-    #    id: cache-quantlib
-    #    uses: actions/cache@v4
-    #    with:
-    #      path: ${{github.workspace}}/QuantLib-${{env.QUANTLIB_VER}}
-    #      key: ${{ runner.os }}-quantlib
-
+      #  - name: Recover cached Quantlib 🔁
+      #    id: cache-quantlib
+      #    uses: actions/cache@v4
+      #    with:
+      #      path: ${{github.workspace}}/QuantLib-${{env.QUANTLIB_VER}}
+      #      key: ${{ runner.os }}-quantlib
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -74,12 +74,15 @@ jobs:
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-      - name: Test GTest
+      - name: Show build dir
+        run: tree ${{github.workspace}}/build
+
+      - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./hello_test
+        run: ./quantlib-test-suite
         env:
-          GTEST_OUTPUT: "xml:build/test-results/google-test/"
-          LLVM_PROFILE_FILE: "build/gtest.profraw"
+          GTEST_OUTPUT: "xml:build/test-results/quantlib/"
+          LLVM_PROFILE_FILE: "build/quantlib.profraw"
 
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
@@ -100,7 +103,7 @@ jobs:
         uses: mikepenz/action-junit-report@v5
         if: success() || failure() # always run even if the previous step fails
         with:
-          report_paths: "**/build/test-results/google-test/*.xml"
+          report_paths: "**/build/test-results/quantlib/*.xml"
           include_passed: "true"
 
       - name: Archive code coverage results
