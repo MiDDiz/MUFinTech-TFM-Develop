@@ -80,7 +80,7 @@ jobs:
 
       - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./quantlib-test-suite
+        run: ./quantlib-test-suite --log_level=all --log_format=JUNIT > reports.xml
         env:
           GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
@@ -93,7 +93,7 @@ jobs:
 
       - name: Generate coverage Report
         working-directory: ${{github.workspace}}/build
-        run: llvm-cov show -dump --show-branches=count ${{github.workspace}}/build/libQuantLib.so -instr-profile=${{env.PROFDATA_FILE}} -format=html -output-dir=${{github.workspace}}/build/coverage_report
+        run: llvm-cov show --show-branches=count ${{github.workspace}}/build/libQuantLib.so -instr-profile=${{env.PROFDATA_FILE}} -format=html -output-dir=${{github.workspace}}/build/coverage_report
         env:
           PROFDATA_FILE: "coverage.profdata"
 
@@ -104,7 +104,7 @@ jobs:
         uses: mikepenz/action-junit-report@v5
         if: success() || failure() # always run even if the previous step fails
         with:
-          report_paths: "**/build/test-results/quantlib/*.xml"
+          report_paths: "**/build/*.xml"
           include_passed: "true"
 
       - name: Archive code coverage results
