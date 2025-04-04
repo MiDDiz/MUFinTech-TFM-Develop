@@ -93,7 +93,7 @@ jobs:
 
       - name: Generate coverage Report
         working-directory: ${{github.workspace}}/build
-        run: llvm-cov show -dump --show-branches=count -show-directory-coverage ${{github.workspace}}/build/libQuantLib.so -instr-profile=${{env.PROFDATA_FILE}} -format=html -output-dir=${{github.workspace}}/build/coverage_report
+        run: llvm-cov show -dump --show-branches=count ${{github.workspace}}/build/libQuantLib.so -instr-profile=${{env.PROFDATA_FILE}} -format=html -output-dir=${{github.workspace}}/build/coverage_report
         env:
           PROFDATA_FILE: "coverage.profdata"
 
