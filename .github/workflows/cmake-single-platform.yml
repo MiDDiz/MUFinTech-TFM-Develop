@@ -20,7 +20,7 @@ env:
   BUILD_TYPE: Release
   BOOST_DOWNLOAD: https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.bz2
   BOOST_VER: 1_82_0
-  BOOST_ROOT: /usr/local/boost
+  BOOST_ROOT: /usr/local/include/boost/
   QUANTLIB_VER: 1.37
 
 jobs:
@@ -80,7 +80,7 @@ jobs:
 
       - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --report_format=XML --report_sink=reports.xml --show_progress=YES #--log_level=all --log_format=JUNIT > reports.xml
+        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=test_suite  --report_format=XML --report_sink=reports.xml --show_progress=YES #--log_level=all --log_format=JUNIT > reports.xml
         env:
           # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
