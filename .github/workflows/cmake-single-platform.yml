@@ -80,9 +80,9 @@ jobs:
 
       - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./quantlib-test-suite --log_level=all --log_format=JUNIT > reports.xml
+        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --report_format=XML --report_sink=reports.xml --show_progress=YES #--log_level=all --log_format=JUNIT > reports.xml
         env:
-          GTEST_OUTPUT: "xml:build/test-results/quantlib/"
+          # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
 
       - name: Compile coverage
