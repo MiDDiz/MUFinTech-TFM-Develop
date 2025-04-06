@@ -80,7 +80,7 @@ jobs:
 
       - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=test_suite  --report_format=XML --report_sink=reports.xml --show_progress=YES #--log_level=all --log_format=JUNIT > reports.xml
+        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml >report_raw.xml #--log_level=all --log_format=JUNIT > reports.xml
         env:
           # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
@@ -101,7 +101,7 @@ jobs:
         run: tree ${{github.workspace}}/build
 
       - name: Print test
-        run: cat ${{github.workspace}}/build/reports.xml
+        run: cat ${{github.workspace}}/build/*.xml
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
