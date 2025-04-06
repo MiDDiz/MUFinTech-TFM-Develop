@@ -80,14 +80,14 @@ jobs:
 
       - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml >report_raw.xml #--log_level=all --log_format=JUNIT > reports.xml
+        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml > report_raw.xml #--log_level=all --log_format=JUNIT > reports.xml
         env:
           # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
 
       - name: "Remove First line of report"
         working-directory: ${{github.workspace}}/build
-        run: tail -n +2 ./report_raw.xml > report_raw.xml
+        run: tail -n +2 report_raw.xml > new_report_raw.xml
 
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
@@ -113,6 +113,19 @@ jobs:
         with:
           report_paths: "**/build/*.xml"
           include_passed: "true"
+      
+      - name: Junit Test Dashboard
+        uses: janisz/action@v2
+        with:
+          paths: "**/build/*.xml"
+          show: all
+          output: "test-summary.md"
+      
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary
+          path: "test-summary.md"
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
