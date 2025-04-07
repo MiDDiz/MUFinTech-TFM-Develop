@@ -35,15 +35,15 @@ jobs:
         id: dependencies
         run: sudo apt install -y clang llvm
 
-      - name: "Make cache recovery as root"
-        run: sudo chown root /bin/tar && sudo chmod u+s /bin/tar
+      #- name: "Make cache recovery as root"
+      #  run: sudo chown root /bin/tar && sudo chmod u+s /bin/tar
 
-      - name: Recover cached Boost 🔁
-        id: cache-boost
-        uses: actions/cache@v4
-        with:
-          path: ${{env.BOOST_ROOT}}
-          key: ${{ runner.os }}-boost
+      #- name: Recover cached Boost 🔁
+      #  id: cache-boost
+      #  uses: actions/cache@v4
+      #  with:
+      #    path: ${{env.BOOST_ROOT}}
+      #    key: ${{ runner.os }}-boost
 
       - name: Generate Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
