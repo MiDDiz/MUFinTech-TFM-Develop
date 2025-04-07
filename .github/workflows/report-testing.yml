@@ -3,7 +3,7 @@ name: report testing
 on:
   push:
     branches:
-      - report-testing
+      - report_testing
 
 permissions:
   contents: read
