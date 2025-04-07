@@ -94,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: report-junit
-          path: "report_raw.xml"
+          path: "${{github.workspace}}/build/report_raw.xml"
 
       - name: "Remove First line of report"
         working-directory: ${{github.workspace}}/build
