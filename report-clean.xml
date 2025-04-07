@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<testsuites time="2009">
 <testsuite tests="1119" skipped="0" errors="0" failures="0" id="0" name="QuantLibTests" time="2009">
 <testcase assertions="1" classname="QuantLibTests.AmericanOptionTests" name="testBaroneAdesiWhaleyValues" time="0">
 <system-out><![CDATA[MESSAGE:
@@ -64619,3 +64620,4 @@ INFO:
 ]]></system-out>
 </testcase>
 </testsuite>
+</testsuites>
