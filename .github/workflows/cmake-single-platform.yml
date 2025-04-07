@@ -85,20 +85,20 @@ jobs:
 
       - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml > report_raw.xml #--log_level=all --log_format=JUNIT > reports.xml
+        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml > report.xml #--log_level=all --log_format=JUNIT > reports.xml
         env:
           # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
+
+      - name: "Remove First line of report"
+        working-directory: ${{github.workspace}}/build
+        run: sed '1,3d' "${{github.workspace}}/build/report.xml" > "${{github.workspace}}/build/report.xml"
 
       - name: Archive whole report
         uses: actions/upload-artifact@v4
         with:
           name: report-junit
-          path: "${{github.workspace}}/build/report_raw.xml"
-
-      - name: "Remove First line of report"
-        working-directory: ${{github.workspace}}/build
-        run: tail -n +2 report_raw.xml > new_report_raw.xml
+          path: "${{github.workspace}}/build/report.xml"
 
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
@@ -112,31 +112,39 @@ jobs:
         env:
           PROFDATA_FILE: "coverage.profdata"
 
-      - name: Print coverage gens
-        run: tree ${{github.workspace}}/build
+      # - name: Print coverage gens
+      #   run: tree ${{github.workspace}}/build
 
-      - name: Print test
-        run: cat ${{github.workspace}}/build/*.xml
+      # - name: Print test
+      #   run: cat ${{github.workspace}}/build/*.xml
+
+      # - name: Publish Test Report
+      #   uses: mikepenz/action-junit-report@v5
+      #   if: success() || failure() # always run even if the previous step fails
+      #   with:
+      #     report_paths: "**/build/*.xml"
+      #     include_passed: "true"
+
+      # - name: Junit Test Dashboard
+      #   uses: janisz/action@v2
+      #   with:
+      #     paths: "**/build/*.xml"
+      #     show: all
+      #     output: "test-summary.md"
+
+      # - name: Archive code coverage results
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: test-summary
+      #     path: "test-summary.md"
 
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5
-        if: success() || failure() # always run even if the previous step fails
+        uses: dorny/test-reporter@v2
+        if: success() || failure() # run this step even if previous step failed
         with:
-          report_paths: "**/build/*.xml"
-          include_passed: "true"
-
-      - name: Junit Test Dashboard
-        uses: janisz/action@v2
-        with:
-          paths: "**/build/*.xml"
-          show: all
-          output: "test-summary.md"
-
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-summary
-          path: "test-summary.md"
+          name: JEST Tests # Name of the check run which will be created
+          path: "**/*.xml"
+          reporter: java-junit # Format of test results
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
