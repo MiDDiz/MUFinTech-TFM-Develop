@@ -33,6 +33,9 @@ jobs:
           name: JEST Tests # Name of the check run which will be created
           path: "**/*.xml"
           reporter: jest-junit # Format of test results
+          use-actions-summary: 'true'
+          list-suites: 'all'
+          working-directory: ''
 
       - name: Test Report
         uses: dorny/test-reporter@v2
