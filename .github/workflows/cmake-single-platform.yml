@@ -35,6 +35,9 @@ jobs:
         id: dependencies
         run: sudo apt install -y clang llvm
 
+      - name: "Make cache recovery as root"
+        run: sudo chown root /bin/tar && sudo chmod u+s /bin/tar
+
       - name: Recover cached Boost 🔁
         id: cache-boost
         uses: actions/cache@v4
@@ -59,19 +62,21 @@ jobs:
 
       #   rm -rf ${{github.workspace}}/boost_${{env.BOOST_VER}}
 
-      #  - name: Recover cached Quantlib 🔁
-      #    id: cache-quantlib
-      #    uses: actions/cache@v4
-      #    with:
-      #      path: ${{github.workspace}}/QuantLib-${{env.QUANTLIB_VER}}
-      #      key: ${{ runner.os }}-quantlib
+      - name: Recover cached build 🔁
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: ${{github.workspace}}/build
+          key: ${{ runner.os }}-quantlib
 
       - name: Configure CMake
+        if: steps.cache-build.outputs.cache-hit != 'true'
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++
 
       - name: Build
+        if: steps.cache-build.outputs.cache-hit != 'true'
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
@@ -84,6 +89,12 @@ jobs:
         env:
           # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
           LLVM_PROFILE_FILE: "build/quantlib.profraw"
+
+      - name: Archive whole report
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-junit
+          path: "report_raw.xml"
 
       - name: "Remove First line of report"
         working-directory: ${{github.workspace}}/build
@@ -113,14 +124,14 @@ jobs:
         with:
           report_paths: "**/build/*.xml"
           include_passed: "true"
-      
+
       - name: Junit Test Dashboard
         uses: janisz/action@v2
         with:
           paths: "**/build/*.xml"
           show: all
           output: "test-summary.md"
-      
+
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
         with:
