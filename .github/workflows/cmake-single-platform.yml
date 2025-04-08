@@ -97,13 +97,13 @@ jobs:
       - name: Archive whole report
         uses: actions/upload-artifact@v4
         with:
-          name: report-junit
+          name: report-junit-clean
           path: "${{github.workspace}}/build/report-clean.xml"
 
       - name: Archive whole report
         uses: actions/upload-artifact@v4
         with:
-          name: report-junit
+          name: report-junit-raw
           path: "${{github.workspace}}/build/report.xml"
 
       - name: Compile coverage
@@ -149,7 +149,7 @@ jobs:
         if: success() || failure() # run this step even if previous step failed
         with:
           name: JEST Tests # Name of the check run which will be created
-          path: "**/*.xml"
+          path: "${{github.workspace}}/build/report-clean.xml"
           reporter: java-junit # Format of test results
 
       - name: Archive code coverage results
