@@ -92,7 +92,13 @@ jobs:
 
       - name: "Remove First line of report"
         working-directory: ${{github.workspace}}/build
-        run: sed '1,3d' "${{github.workspace}}/build/report.xml" > "${{github.workspace}}/build/report.xml"
+        run: sed '1,3d' "${{github.workspace}}/build/report.xml" > "${{github.workspace}}/build/report-clean.xml"
+
+      - name: Archive whole report
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-junit
+          path: "${{github.workspace}}/build/report-clean.xml"
 
       - name: Archive whole report
         uses: actions/upload-artifact@v4
