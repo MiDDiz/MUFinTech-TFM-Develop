@@ -205,46 +205,59 @@ jobs:
         id: dependencies
         run: sudo apt install -y clang llvm
 
-      - name: Build Boost
+      - name: Generate Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
         id: install-boost
-        uses: MarkusJx/install-boost@v2
-        with:
-          boost_version: 1.87.0
-          platform_version: 20.04
-          link: shared
+        run: |
+          echo "Boost Cache Failed ❌"
+          echo "Building Boost v${{env.BOOST_VER}} 🚀..."
+          wget ${{env.BOOST_DOWNLOAD}}
+          tar --bzip2 -xf ${{github.workspace}}/boost_${{env.BOOST_VER}}.tar.bz2
+          echo "Boost v${{env.BOOST_VER}} Downloaded ✅"
+          cd ${{github.workspace}}/boost_${{env.BOOST_VER}}
+          sudo ./bootstrap.sh
+          echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
+          sudo ./b2 install
+          echo "Boost v${{env.BOOST_VER}} Installed ✅"
 
       - name: Run Build Wrapper
         run: |
           mkdir build
           cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_COMPILER=/usr/bin/clang++ 
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Release
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+        # env:
+        #   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
-      - name: Test Boost
+      - name: Test Quantlib
         working-directory: ${{github.workspace}}/build
-        run: ./test_instrumentos
+        run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml > report.xml #--log_level=all --log_format=JUNIT > reports.xml
         env:
-          LLVM_PROFILE_FILE: "build/btest.profraw"
+          # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
+          LLVM_PROFILE_FILE: "build/quantlib.profraw"
 
-      - name: Test GTest
+      - name: "Remove First line of report"
         working-directory: ${{github.workspace}}/build
-        run: ./hello_test
-        env:
-          GTEST_OUTPUT: "xml:build/test-results/google-test/"
-          LLVM_PROFILE_FILE: "build/gtest.profraw"
+        run: sed '1,3d' "${{github.workspace}}/build/report.xml" > "${{github.workspace}}/build/report-clean.xml"
 
       - name: Compile coverage
         working-directory: ${{github.workspace}}/build
-        run: llvm-profdata merge -sparse -output=${{github.workspace}}/build/${PROFDATA_FILE} ${{github.workspace}}/build/**/*.profraw
+        run: llvm-profdata merge -sparse -output=${{github.workspace}}/build/${{env.PROFDATA_FILE}} ${{github.workspace}}/build/**/*.profraw
         env:
           PROFDATA_FILE: "coverage.profdata"
 
       - name: Generate coverage Report
         working-directory: ${{github.workspace}}/build
-        run: llvm-cov show --show-branches=count ${{github.workspace}}/build/libTestingLib.so --object ${{github.workspace}}/build/libInstrumentos.so -instr-profile=${PROFDATA_FILE} > coverage.txt
+        run: llvm-cov show --show-branches=count ${{github.workspace}}/build/libQuantLib.so -instr-profile=${{env.PROFDATA_FILE}} -format=html -output-dir=${{github.workspace}}/build/coverage_report
         env:
           PROFDATA_FILE: "coverage.profdata"
+
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v2
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: JEST Tests # Name of the check run which will be created
+          path: "${{github.workspace}}/build/report-clean.xml"
+          reporter: java-junit # Format of test results
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
