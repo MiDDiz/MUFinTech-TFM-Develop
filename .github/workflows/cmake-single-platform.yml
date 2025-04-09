@@ -267,3 +267,4 @@ jobs:
           args: >
             --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
             --define sonar.cfamily.llvm-cov.reportPath=${{github.workspace}}/build/coverage.txt
+            --define sonar.exclusions=boost_1_82_0/**/*
