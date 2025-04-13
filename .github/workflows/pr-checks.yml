@@ -1,0 +1,100 @@
+name: PR Quality Gate Checking
+
+on:
+    pull_request:
+        types: [opened]
+
+permissions:
+    contents: read
+    checks: write
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  BOOST_DOWNLOAD: https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.bz2
+  BOOST_VER: 1_82_0
+  BOOST_ROOT: /usr/local/include/boost/
+  QUANTLIB_VER: 1.37
+
+jobs:
+    complete-pipeline:
+        name: Deploy to sonarqube cloud
+        runs-on: ubuntu-latest
+        env:
+            BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+            - name: Install Build Wrapper
+              uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v4
+            
+            - name: Install dependencies
+              id: dependencies
+              run: sudo apt install -y clang llvm
+
+            - name: Build Dependency Boost
+              if: steps.cache-boost.outputs.cache-hit != 'true'
+              id: install-boost
+              run: |
+                  echo "Boost Cache Failed ❌"
+                  echo "Building Boost v${{env.BOOST_VER}} 🚀..."
+                  wget ${{env.BOOST_DOWNLOAD}}
+                  tar --bzip2 -xf ${{github.workspace}}/boost_${{env.BOOST_VER}}.tar.bz2
+                  echo "Boost v${{env.BOOST_VER}} Downloaded ✅"
+                  cd ${{github.workspace}}/boost_${{env.BOOST_VER}}
+                  sudo ./bootstrap.sh
+                  echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
+                  sudo ./b2 install
+                  echo "Boost v${{env.BOOST_VER}} Installed ✅"
+
+            - name: Compile code
+              run: |
+                mkdir build
+                cmake -S . -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_CXX_COMPILER=/usr/bin/clang++ 
+                build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build build/ --config Release
+
+            - name: Test code
+              working-directory: ${{github.workspace}}/build
+              run: ./quantlib-test-suite --detect_memory_leaks=1 --log_format=JUNIT --log_level=all --report_format=XML --report_sink=reports.xml  2> report_err.xml > report.xml #--log_level=all --log_format=JUNIT > reports.xml
+              env:
+                # GTEST_OUTPUT: "xml:build/test-results/quantlib/"
+                LLVM_PROFILE_FILE: "build/quantlib.profraw"
+            
+            - name: "Normalize test reporting format"
+              working-directory: ${{github.workspace}}/build
+              run: sed '1,3d' "${{github.workspace}}/build/report.xml" > "${{github.workspace}}/build/report-clean.xml"
+
+            - name: Compile test coverage
+              working-directory: ${{github.workspace}}/build
+              run: llvm-profdata merge -sparse -output=${{github.workspace}}/build/${{env.PROFDATA_FILE}} ${{github.workspace}}/build/**/*.profraw
+              env:
+                PROFDATA_FILE: "coverage.profdata"
+
+            - name: Publish Test Report
+              id: test-reporting
+              uses: dorny/test-reporter@v2
+              if: success() || failure() # run this step even if previous step failed
+              with:
+                name: JEST Tests # Name of the check run which will be created
+                path: "${{github.workspace}}/build/report-clean.xml"
+                reporter: java-junit # Format of test results
+                fail-on-error: 'true'
+            
+            - name: SonarQube Scan
+              uses: SonarSource/sonarqube-scan-action@v4
+              env:
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              with:
+                args: >
+                  --define sonar.cfamily.compile-commands="${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+                  --define sonar.cfamily.llvm-cov.reportPath=${{github.workspace}}/build/coverage.txt
+                  --define sonar.exclusions=boost_1_82_0/**/*,src/QuantLib-1.37/Examples/**/*,src/QuantLib-1.37/Docs/**/*,src/QuantLib-1.37/test-suite/**/*
+
+            - name: SonarQube Quality Gate check
+              id: sonarqube-quality-gate-check
+              uses: sonarsource/sonarqube-quality-gate-action@master
+              with:
+                pollingTimeoutSec: 600
+              env:
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
