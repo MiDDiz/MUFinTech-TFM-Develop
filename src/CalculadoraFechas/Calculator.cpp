@@ -45,7 +45,7 @@ short Thirty_360::compute_daycount(const short years, const short months,
 	return (360 * years) + 30 * (months - 1) + std::max<short>(0, 30 - days_from) + std::min<short>(30, days_to);
 }
 
-short Thirty_360::compute_reverse(const short years, const short months,
+short Thirty_360::compute_foo(const short years, const short months,
 								  const short days_from, const short days_to)
 {
 	char testing[] = "This should not break";
