@@ -76,7 +76,7 @@ jobs:
               run: llvm-cov show --show-branches=count ${{github.workspace}}/build/libQuantLib.so -instr-profile=${{env.PROFDATA_FILE}} > coverage.txt
               env:
                 PROFDATA_FILE: "coverage.profdata"
-            
+
             - name: Publish Test Report
               id: test-reporting
               uses: dorny/test-reporter@v2
