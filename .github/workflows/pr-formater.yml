@@ -44,6 +44,7 @@ jobs:
 
       - name: Check Compilation Database
         run: cat build/*
+        continue-on-error: true
 
       - name: Download python script from clang-tidy sources
         run: wget https://github.com/llvm/llvm-project/blob/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py
