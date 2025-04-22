@@ -22,8 +22,8 @@ jobs:
         run: |
           sudo apt install -y clang-tidy clang llvm
           pip install clang-tools
-          clang-tools --tool clang-apply-replacements
-
+          clang-tools --install 17 --tool clang-apply-replacements
+          alias clang-apply-replacements=clang-apply-replacements-17
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         id: install-boost
