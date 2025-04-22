@@ -52,7 +52,7 @@ jobs:
       #- name: Format code
       #  run: clang-tidy -checks='modernize-use-override' -fix -p build/compile_commands.json --use-color src/**
       - name: Format code
-        run: sudo python /run-clang-tidy.py -fix src/
+        run: sudo python ./run-clang-tidy.py -fix src/
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
