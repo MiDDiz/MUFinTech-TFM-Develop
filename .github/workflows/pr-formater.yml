@@ -2,6 +2,12 @@ name: Format
 on:
   pull_request:
     branches: [main]
+env:
+  BUILD_TYPE: Release
+  BOOST_DOWNLOAD: https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.bz2
+  BOOST_VER: 1_82_0
+  BOOST_ROOT: /usr/local/include/boost/
+  QUANTLIB_VER: 1.37
 jobs:
   format:
     runs-on: ubuntu-latest
@@ -11,10 +17,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-          
+
       - name: Install dependencies
         run: sudo apt install -y clang-tidy
-    
+
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         id: install-boost
@@ -44,7 +50,7 @@ jobs:
 
       - name: Format code
         run: clang-tidy -checks='modernize-use-override' -fix -p src/ --use-color
-      
+
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
