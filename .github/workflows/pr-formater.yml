@@ -47,7 +47,7 @@ jobs:
         continue-on-error: true
 
       - name: Download python script from clang-tidy sources
-        run: wget https://github.com/llvm/llvm-project/blob/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py
+        run: wget https://raw.githubusercontent.com/llvm/llvm-project/refs/heads/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py
 
       #- name: Format code
       #  run: clang-tidy -checks='modernize-use-override' -fix -p build/compile_commands.json --use-color src/**
