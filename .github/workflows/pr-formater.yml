@@ -19,7 +19,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Install dependencies
-        run: sudo apt install -y clang-tidy
+        run: sudo apt install -y clang-tidy clang-apply-replacements clang llvm
 
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
