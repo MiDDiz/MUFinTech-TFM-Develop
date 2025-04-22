@@ -62,7 +62,9 @@ jobs:
       #  run: clang-tidy -checks='modernize-use-override' -fix -p build/compile_commands.json --use-color src/**
       - name: Format code
         working-directory: ${{github.workspace}}/build
-        run: sudo python ./run-clang-tidy.py -fix src/
+        run: |
+          alias clang-apply-replacements=clang-apply-replacements-17
+          sudo python ./run-clang-tidy.py -fix src/
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
