@@ -13,7 +13,22 @@ jobs:
           ref: ${{ github.head_ref }}
           
       - name: Install dependencies
-        run: sudo apt-get install clang-tidy
+        run: sudo apt install -y clang-tidy
+    
+      - name: Build Dependency Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        id: install-boost
+        run: |
+          echo "Boost Cache Failed ❌"
+          echo "Building Boost v${{env.BOOST_VER}} 🚀..."
+          wget ${{env.BOOST_DOWNLOAD}}
+          tar --bzip2 -xf ${{github.workspace}}/boost_${{env.BOOST_VER}}.tar.bz2
+          echo "Boost v${{env.BOOST_VER}} Downloaded ✅"
+          cd ${{github.workspace}}/boost_${{env.BOOST_VER}}
+          sudo ./bootstrap.sh
+          echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
+          sudo ./b2 install
+          echo "Boost v${{env.BOOST_VER}} Installed ✅"
 
       - name: Generating Compilation Database
         run: |
