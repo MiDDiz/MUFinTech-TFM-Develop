@@ -22,6 +22,7 @@ jobs:
         run: |
           sudo apt install -y clang-tidy clang llvm
           pip install clang-tools
+          clang-tools --install 13
 
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
