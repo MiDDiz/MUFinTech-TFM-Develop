@@ -24,6 +24,11 @@ jobs:
           pip install clang-tools
           clang-tools --install 17 --tool clang-apply-replacements
           alias clang-apply-replacements=clang-apply-replacements-17
+      - name: Debug vars
+        run: |
+          echo $PATH
+          which clang-apply-replacements
+          which clang-apply-replacements-17
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         id: install-boost
