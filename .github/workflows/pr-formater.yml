@@ -1,0 +1,73 @@
+name: Format
+on:
+  pull_request:
+    branches: [main]
+env:
+  BUILD_TYPE: Release
+  BOOST_DOWNLOAD: https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.bz2
+  BOOST_VER: 1_82_0
+  BOOST_ROOT: /usr/local/include/boost/
+  QUANTLIB_VER: 1.37
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt install -y clang-tidy clang llvm
+          pip install clang-tools
+          clang-tools --install 17 --tool clang-apply-replacements
+          alias clang-apply-replacements=clang-apply-replacements-17
+      - name: Debug vars
+        run: |
+          echo $PATH
+          which clang-apply-replacements
+          which clang-apply-replacements-17
+      - name: Build Dependency Boost
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        id: install-boost
+        run: |
+          echo "Boost Cache Failed ❌"
+          echo "Building Boost v${{env.BOOST_VER}} 🚀..."
+          wget ${{env.BOOST_DOWNLOAD}}
+          tar --bzip2 -xf ${{github.workspace}}/boost_${{env.BOOST_VER}}.tar.bz2
+          echo "Boost v${{env.BOOST_VER}} Downloaded ✅"
+          cd ${{github.workspace}}/boost_${{env.BOOST_VER}}
+          sudo ./bootstrap.sh
+          echo "Boost v${{env.BOOST_VER}} Bootstrapped ✅"
+          sudo ./b2 install
+          echo "Boost v${{env.BOOST_VER}} Installed ✅"
+
+      - name: Generating Compilation Database
+        run: |
+          mkdir build
+          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -S . -B build
+          ln -s build/compile_commands.json src/
+
+      - name: Check Compilation Database
+        run: cat build/*
+        continue-on-error: true
+
+      - name: Download python script from clang-tidy sources
+        working-directory: ${{github.workspace}}/build
+        run: wget https://raw.githubusercontent.com/llvm/llvm-project/refs/heads/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py
+
+      #- name: Format code
+      #  run: clang-tidy -checks='modernize-use-override' -fix -p build/compile_commands.json --use-color src/**
+      - name: Format code
+        working-directory: ${{github.workspace}}/build
+        run: |
+          alias clang-apply-replacements=clang-apply-replacements-17
+          sudo python ./run-clang-tidy.py -fix src/
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Apply formatting changes
+          branch: ${{ github.head_ref }}

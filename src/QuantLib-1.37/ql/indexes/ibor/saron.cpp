@@ -1,8 +1,7 @@
 /* -*- mode: c++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 
 /*
- Copyright (C) 2009 StatPro Italia srl
- Copyright (C) 2019 Aprexo Limited
+ Copyright (C) 2025 Paolo D'Elia
 
  This file is part of QuantLib, a free-software/open-source library
  for financial quantitative analysts and developers - http://quantlib.org/
@@ -18,34 +17,14 @@
  FOR A PARTICULAR PURPOSE.  See the license for more details.
 */
 
-/*! \file version.hpp
-    \brief Version number, and version of boost the library is compiled with
-*/
-
-#ifndef quantlib_version_hpp
-#define quantlib_version_hpp
-
-#include <ql/qldefines.hpp>
-
-/*! \addtogroup macros */
-/*! @{ */
-
-//! version string
-#define QL_VERSION "1.39-dev"
-
-//! version hexadecimal number
-#define QL_HEX_VERSION 0x01390000
-
-/*! @}  */
+#include <ql/indexes/ibor/saron.hpp>
+#include <ql/time/calendars/switzerland.hpp>
+#include <ql/time/daycounters/actual360.hpp>
+#include <ql/currencies/europe.hpp>
 
 namespace QuantLib {
 
-    /*! Returns the version of boost that the QuantLib library was built with
-        Use to check that client code is using a consistent version of boost.
-        Using QuantLib header files compiled with a different version of boost
-        than the library itself may result in undefined behaviour */
-    std::size_t compiledBoostVersion();
+    Saron::Saron(const Handle<YieldTermStructure>& h)
+    : OvernightIndex("SARON", 0, CHFCurrency(), Switzerland(), Actual360(), h) {}
 
 }
-
-#endif
