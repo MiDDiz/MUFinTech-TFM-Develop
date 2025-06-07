@@ -29,6 +29,7 @@ jobs:
           echo $PATH
           which clang-apply-replacements
           which clang-apply-replacements-17
+
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         id: install-boost
@@ -60,13 +61,17 @@ jobs:
 
       #- name: Format code
       #  run: clang-tidy -checks='modernize-use-override' -fix -p build/compile_commands.json --use-color src/**
-      - name: Format code
+      - name: Find format errors in code
         working-directory: ${{github.workspace}}/build
         run: |
           alias clang-apply-replacements=clang-apply-replacements-17
           echo $PATH
           which clang-apply-replacements
-          sudo python ./run-clang-tidy.py src/
+          sudo python ./run-clang-tidy.py src/ -export-fixes=issues_found.yaml
+
+      - name: Fix found errors
+        working-directory: ${{github.workspace}}/build
+        run: clang-apply-replacements .
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
