@@ -67,14 +67,15 @@ jobs:
           alias clang-apply-replacements=clang-apply-replacements-17
           echo $PATH
           which clang-apply-replacements
-          sudo python ./run-clang-tidy.py src/ -export-fixes=issues_found.yaml
+          sudo python ./run-clang-tidy.py src/ -export-fixes=./issues/
 
       - name: Fix found errors
         working-directory: ${{github.workspace}}/build
-        run: clang-apply-replacements .
+        run: clang-apply-replacements ./issues/
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Apply formatting changes
+          status_options: '--untracked-files=no'
           branch: ${{ github.head_ref }}
