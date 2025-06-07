@@ -64,6 +64,8 @@ jobs:
         working-directory: ${{github.workspace}}/build
         run: |
           alias clang-apply-replacements=clang-apply-replacements-17
+          echo $PATH
+          which clang-apply-replacements
           sudo python ./run-clang-tidy.py -fix src/
 
       - name: Commit changes
