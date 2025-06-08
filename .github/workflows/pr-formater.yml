@@ -71,7 +71,7 @@ jobs:
 
       - name: Fix found errors
         working-directory: ${{github.workspace}}/build
-        run: sudo clang-apply-replacements-20 .
+        run: sudo /home/runner/.local/bin/clang-apply-replacements .
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
