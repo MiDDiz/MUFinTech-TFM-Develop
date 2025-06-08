@@ -1,4 +1,4 @@
-name: Format
+name: Auto Formate with Clang-Tidy
 on:
   pull_request:
     branches: [main]
@@ -9,7 +9,7 @@ env:
   BOOST_ROOT: /usr/local/include/boost/
   QUANTLIB_VER: 1.37
 jobs:
-  format:
+  pr-auto-formater:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -22,13 +22,14 @@ jobs:
         run: |
           sudo apt install -y clang-tidy clang llvm
           pip install clang-tools
-          clang-tools --install 17 --tool clang-apply-replacements
-          alias clang-apply-replacements=clang-apply-replacements-17
+          clang-tools --install 20 --tool clang-apply-replacements
+          alias clang-apply-replacements=clang-apply-replacements-20
       - name: Debug vars
         run: |
           echo $PATH
           which clang-apply-replacements
           which clang-apply-replacements-17
+
       - name: Build Dependency Boost
         if: steps.cache-boost.outputs.cache-hit != 'true'
         id: install-boost
@@ -60,14 +61,21 @@ jobs:
 
       #- name: Format code
       #  run: clang-tidy -checks='modernize-use-override' -fix -p build/compile_commands.json --use-color src/**
-      - name: Format code
+      - name: Find format errors in code
         working-directory: ${{github.workspace}}/build
         run: |
           alias clang-apply-replacements=clang-apply-replacements-17
-          sudo python ./run-clang-tidy.py -fix src/
+          echo $PATH
+          which clang-apply-replacements
+          sudo python ./run-clang-tidy.py src/ -export-fixes=./issues/
+
+      - name: Fix found errors
+        working-directory: ${{github.workspace}}/
+        run: sudo /home/runner/.local/bin/clang-apply-replacements .
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Apply formatting changes
+          status_options: "--untracked-files=no"
           branch: ${{ github.head_ref }}

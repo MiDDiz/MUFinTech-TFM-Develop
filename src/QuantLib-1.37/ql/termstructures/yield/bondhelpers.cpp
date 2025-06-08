@@ -58,12 +58,8 @@ namespace QuantLib {
         switch (priceType_) {
             case Bond::Price::Clean:
                 return bond_->cleanPrice();
-                break;
-
             case Bond::Price::Dirty:
                 return bond_->dirtyPrice();
-                break;
-
             default:
                 QL_FAIL("This price type isn't implemented.");
         }
