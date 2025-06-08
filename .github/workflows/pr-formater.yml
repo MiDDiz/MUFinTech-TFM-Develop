@@ -22,8 +22,8 @@ jobs:
         run: |
           sudo apt install -y clang-tidy clang llvm
           pip install clang-tools
-          clang-tools --install 17 --tool clang-apply-replacements
-          alias clang-apply-replacements=clang-apply-replacements-17
+          clang-tools --install 20 --tool clang-apply-replacements
+          alias clang-apply-replacements=clang-apply-replacements-20
       - name: Debug vars
         run: |
           echo $PATH
@@ -71,7 +71,7 @@ jobs:
 
       - name: Fix found errors
         working-directory: ${{github.workspace}}/build
-        run: sudo clang-apply-replacements-17 ./issues/
+        run: sudo clang-apply-replacements-20 .
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
