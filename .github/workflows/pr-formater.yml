@@ -71,11 +71,11 @@ jobs:
 
       - name: Fix found errors
         working-directory: ${{github.workspace}}/build
-        run: clang-apply-replacements ./issues/
+        run: sudo clang-apply-replacements ./issues/
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Apply formatting changes
-          status_options: '--untracked-files=no'
+          status_options: "--untracked-files=no"
           branch: ${{ github.head_ref }}
