@@ -70,7 +70,7 @@ jobs:
           sudo python ./run-clang-tidy.py src/ -export-fixes=./issues/
 
       - name: Fix found errors
-        working-directory: ${{github.workspace}}/build
+        working-directory: ${{github.workspace}}/
         run: sudo /home/runner/.local/bin/clang-apply-replacements .
 
       - name: Commit changes
